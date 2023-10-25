@@ -31,14 +31,19 @@ class VAEXperiment(pl.LightningModule):
     def forward(self, input: Tensor, **kwargs) -> Tensor:
         return self.model(input, **kwargs)
 
-    def training_step(self, batch, batch_idx, optimizer_idx = 0):
+#   def training_step(self, batch, batch_idx , optimizer_idx = 0):
+    def training_step(self, batch, batch_idx):
         real_img, labels = batch
         self.curr_device = real_img.device
 
         results = self.forward(real_img, labels = labels)
+        # train_loss = self.model.loss_function(*results,
+        #                                       M_N = self.params['kld_weight'], #al_img.shape[0]/ self.num_train_imgs,
+        #                                       optimizer_idx=optimizer_idx,
+        #                                       batch_idx = batch_idx)
+
         train_loss = self.model.loss_function(*results,
                                               M_N = self.params['kld_weight'], #al_img.shape[0]/ self.num_train_imgs,
-                                              optimizer_idx=optimizer_idx,
                                               batch_idx = batch_idx)
 
         self.log_dict({key: val.item() for key, val in train_loss.items()}, sync_dist=True)
@@ -110,7 +115,7 @@ class VAEXperiment(pl.LightningModule):
         try:
             if self.params['scheduler_gamma'] is not None:
                 scheduler = optim.lr_scheduler.ExponentialLR(optims[0],
-                                                             gamma = self.params['scheduler_gamma'])
+                                                             gamma = self.params['scheduler_gamma'], verbose=True)
                 scheds.append(scheduler)
 
                 # Check if another scheduler is required for the second optimizer
