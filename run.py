@@ -10,7 +10,9 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import TensorBoardLogger
 #from pytorch_lightning.utilities.seed import seed_everything
 from lightning_lite.utilities.seed import seed_everything
-from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+# from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from pytorch_lightning.callbacks import LearningRateMonitor
+import customModelCheckpoint
 from dataset import VAEDataset
 from pytorch_lightning.strategies import DDPStrategy
 
@@ -47,7 +49,7 @@ data.setup()
 runner = Trainer(logger=tb_logger,
                  callbacks=[
                      LearningRateMonitor(),
-                     ModelCheckpoint(save_top_k=2, 
+                     customModelCheckpoint(save_top_k=2, 
                                      dirpath =os.path.join(tb_logger.log_dir , "checkpoints"), 
                                      monitor= "val_loss",
                                      save_last= True),

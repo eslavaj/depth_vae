@@ -22,7 +22,7 @@ exp_params:
 trainer_params:
   accelerator: 'gpu'
   devices: [0]
-  max_epochs: 100
+  max_epochs: 2
   
 
 logging_params:
